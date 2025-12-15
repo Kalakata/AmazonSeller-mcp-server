@@ -6,7 +6,7 @@
     // Load environment variables
     dotenv.config();
 
-    console.log('Starting Amazon SP-API MCP server...');
+    console.error('Starting Amazon SP-API MCP server...');
 
     // Start receiving messages on stdin and sending messages on stdout
     const transport = new StdioServerTransport();
