@@ -65,6 +65,23 @@ export function clearTokenCache() {
 }
 
 /**
+ * Serialize params for SP-API (handles arrays as comma-separated)
+ */
+function serializeParams(params) {
+  const parts = [];
+  for (const [key, value] of Object.entries(params)) {
+    if (value === undefined || value === null) continue;
+    if (Array.isArray(value)) {
+      // SP-API expects comma-separated arrays
+      parts.push(`${encodeURIComponent(key)}=${encodeURIComponent(value.join(','))}`);
+    } else {
+      parts.push(`${encodeURIComponent(key)}=${encodeURIComponent(value)}`);
+    }
+  }
+  return parts.join('&');
+}
+
+/**
  * Make a request to the SP-API (without AWS Signature V4)
  */
 export async function makeSpApiRequest(method, path, data = null, queryParams = {}) {
@@ -78,17 +95,26 @@ export async function makeSpApiRequest(method, path, data = null, queryParams = 
       const baseUrl = ENDPOINTS[region] || ENDPOINTS['eu-west-1'];
       const url = `${baseUrl}${path}`;
 
-      const response = await axios({
+      const config = {
         method,
         url,
-        params: queryParams,
-        data: data,
         headers: {
           'x-amz-access-token': accessToken,
           'Content-Type': 'application/json'
-        },
-        timeout: 60000
-      });
+        }
+      };
+
+      // Only add params if not empty
+      if (queryParams && Object.keys(queryParams).length > 0) {
+        config.params = queryParams;
+      }
+
+      // Only add data if present
+      if (data) {
+        config.data = data;
+      }
+
+      const response = await axios(config);
 
       return response.data;
     } catch (error) {
@@ -135,13 +161,15 @@ export async function makeSpApiRequest(method, path, data = null, queryParams = 
     }
   }
 
-  const errorMessage = lastError?.response?.data?.errors?.[0]?.message
-    || lastError?.response?.data?.message
+  const errorData = lastError?.response?.data;
+  const errorMessage = errorData?.errors?.[0]?.message
+    || errorData?.message
     || lastError?.message
     || 'Unknown error';
+  const errorCode = errorData?.errors?.[0]?.code || '';
 
-  console.error('SP-API request failed:', lastError?.response?.data || lastError?.message);
-  throw new Error(`SP-API request failed: ${errorMessage}`);
+  console.error('SP-API request failed:', JSON.stringify(errorData, null, 2) || lastError?.message);
+  throw new Error(`SP-API request failed: ${errorCode ? `[${errorCode}] ` : ''}${errorMessage}${errorData ? ` | Full response: ${JSON.stringify(errorData)}` : ''}`);
 }
 
 function sleep(ms) {
