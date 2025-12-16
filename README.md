@@ -1,101 +1,76 @@
 # Amazon Selling Partner API MCP Server
 
-    A Model Context Protocol (MCP) server for interacting with the Amazon Selling Partner API. This server provides tools and resources for accessing Amazon SP-API functionality through a standardized interface.
+A Model Context Protocol (MCP) server for interacting with the Amazon Selling Partner API. This server provides tools for accessing Amazon SP-API functionality through Claude Code.
 
-    ## Features
+## Features
 
-    - Authentication and authorization with Amazon SP-API
-    - Comprehensive coverage of SP-API endpoints
-    - Documentation resources for API reference
-    - Tools for managing catalog, inventory, orders, reports, and more
-    - Secure credential handling
+- Simple OAuth authentication (no AWS credentials required)
+- Tools for managing catalog, inventory, orders, reports, and more
+- Works with Claude Code out of the box
 
-    ## Prerequisites
+## Prerequisites
 
-    - Node.js 16 or higher
-    - Amazon Selling Partner API credentials
-    - AWS credentials with appropriate permissions
+- Node.js 18 or higher
+- Amazon Selling Partner API credentials (Client ID, Client Secret, Refresh Token)
 
-    ## Installation
+## Installation for Claude Code
 
-    ```bash
-    npm install amazon-sp-api-mcp-server
-    ```
+Run this command to add the MCP server to Claude Code:
 
-    Or run directly with npx:
+```bash
+claude mcp add amazon-seller -e SP_API_CLIENT_ID=your_client_id -e SP_API_CLIENT_SECRET=your_client_secret -e SP_API_REFRESH_TOKEN=your_refresh_token -e SP_API_REGION=eu-west-1 -- npx github:Kalakata/AmazonSeller-mcp-server
+```
 
-    ```bash
-    npx amazon-sp-api-mcp-server
-    ```
+Replace the placeholder values with your actual credentials:
+- `your_client_id` - Your SP-API LWA Client ID
+- `your_client_secret` - Your SP-API LWA Client Secret
+- `your_refresh_token` - Your SP-API Refresh Token
+- `eu-west-1` - Your region (`us-east-1` for NA, `eu-west-1` for EU, `us-west-2` for FE)
 
-    ## Configuration
+After adding, restart Claude Code to use the new MCP server.
 
-    Create a `.env` file in the root directory with your Amazon SP-API credentials:
+## Manual Installation
 
-    ```
-    SP_API_CLIENT_ID=your_client_id
-    SP_API_CLIENT_SECRET=your_client_secret
-    SP_API_REFRESH_TOKEN=your_refresh_token
-    SP_API_AWS_ACCESS_KEY=your_aws_access_key
-    SP_API_AWS_SECRET_KEY=your_aws_secret_key
-    SP_API_ROLE_ARN=your_role_arn
-    SP_API_MARKETPLACE_ID=ATVPDKIKX0DER
-    SP_API_REGION=us-east-1
-    ```
+Clone and install:
 
-    ## Usage
+```bash
+git clone https://github.com/Kalakata/AmazonSeller-mcp-server.git
+cd AmazonSeller-mcp-server
+npm install
+```
 
-    Start the server:
+Create a `.env` file:
 
-    ```bash
-    npm start
-    ```
+```
+SP_API_CLIENT_ID=your_client_id
+SP_API_CLIENT_SECRET=your_client_secret
+SP_API_REFRESH_TOKEN=your_refresh_token
+SP_API_REGION=eu-west-1
+```
 
-    For development with auto-restart:
+Start the server:
 
-    ```bash
-    npm run dev
-    ```
+```bash
+npm start
+```
 
-    To test with MCP Inspector:
+## Available Tools
 
-    ```bash
-    npm run inspect
-    ```
+- `checkCredentials` - Verify API credentials
+- `getMarketplaceParticipations` - List marketplaces you sell in
+- `searchCatalogItems` - Search product catalog
+- `getCatalogItem` - Get product details by ASIN
+- `getInventorySummaries` - Get inventory levels
+- `updateInventory` - Update inventory quantities
+- `getOrders` - List orders
+- `getOrder` - Get order details
+- `getOrderItems` - Get items in an order
+- `createReport` / `getReport` / `getReports` - Manage reports
+- `getPricing` / `getCompetitivePricing` - Get pricing data
+- `getListingsItem` / `putListingsItem` / `deleteListingsItem` - Manage listings
+- `getFbaInventorySummaries` - Get FBA inventory
+- And more...
 
-    ## Available Tools
+## License
 
-    The server provides tools for interacting with various aspects of the Amazon Selling Partner API:
-
-    - Authentication tools
-    - Catalog tools
-    - Inventory management
-    - Order processing
-    - Report generation and retrieval
-    - Feed submission
-    - Financial data access
-    - Notification management
-    - Product pricing
-    - Listings management
-    - FBA operations
-
-    ## Documentation Resources
-
-    Access API documentation through the `amazon-sp-api://{category}` resource, where category can be:
-
-    - overview
-    - authentication
-    - catalog
-    - orders
-    - inventory
-    - reports
-    - feeds
-    - finance
-    - notifications
-    - productPricing
-    - listings
-    - fba
-
-    ## License
-
-    MIT
+MIT
